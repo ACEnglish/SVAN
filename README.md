@@ -35,7 +35,7 @@ SVAN does not require any further installation step. It is written in Python and
     * bwa-mem v0.7.17-r1188 (https://github.com/lh3/bwa)
     * minimap2 v2.10-r764-dirty (https://github.com/lh3/minimap2)
 
-3. Python libraries 
+3. Python libraries: 
     * pysam 
     * cigar
     * itertools
