@@ -11,6 +11,7 @@ from collections import Counter
 import os.path
 import subprocess
 import os.path
+from tqdm import tqdm
 
 # Internal
 import formats
@@ -53,7 +54,7 @@ def annot_vntr(VCF, TRF_out, vntrBinDb):
     NO_vntr_VCF.format_order = VCF.format_order
 
     ## Assess for each variant in the VCF file if VNTR
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -110,7 +111,7 @@ def annot_tandem_dup(VCF, PAFs_ref):
     no_dup_VCF.format_order = VCF.format_order
 
     ## For each variant assess if tandem duplication
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -196,7 +197,7 @@ def annot_tandem_dup_realignment(VCF, reference, rootDir):
     counter = {}
 
     ## For each variant
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
         
         ## Create output directory
         insId = variant.chrom + ':' + str(variant.pos) 
@@ -336,7 +337,7 @@ def annot_tandem_dup_unmappable(VCF, PAFs_repeatDb):
     no_dup_VCF.format_order = VCF.format_order
 
     ## For each variant assess if tandem duplication spanning repetitive sequence
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -411,7 +412,7 @@ def annot_interspersed_dup(VCF, PAFs_ref):
     no_dup_VCF.format_order = VCF.format_order
 
     ## For each variant assess if numt
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -458,7 +459,7 @@ def annot_numt(VCF, PAFs_ref):
     NO_numt_VCF.format_order = VCF.format_order
 
     ## For each variant assess if numt
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -568,7 +569,7 @@ def annot_retro(VCF, exonsBinDb, PAFs_ref, reference, repeatsDb, TRF_out, outDir
     RETRO_VCF.format_order = NO_RETRO_VCF.format_order
 
     ## Iterate over variants in the candidate VCF assigning them to the RETRO and no_RETRO VCFs
-    for variant in candidate_VCF.variants:
+    for variant in tqdm(candidate_VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -607,7 +608,7 @@ def annot_mei_not_retro(VCF, PAFs_repeatDb):
     NO_MEI_VCF.format_order = VCF.format_order
 
     ## For each variant assess if retrotransposon insert without retrotransposition hallmarks
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
  
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -688,7 +689,7 @@ def call_retro_candidate(VCF):
     stats['RETRO_CANDIDATE'] = 0
 
     ## For each variant
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -828,7 +829,7 @@ def annotate_tsd(VCF, reference, retro_annot):
     reference = pysam.FastaFile(reference)
 
     ## For each variant
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -897,7 +898,7 @@ def annotate_endomotif(VCF, reference, retro_annot):
     reference = pysam.FastaFile(reference)
 
     ## For each variant
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -1494,7 +1495,7 @@ def annotate_hexamer(VCF, retro_annot, TRF_out):
     TRF.read(TRF_out)
 
     ## For each variant
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
 
@@ -2668,7 +2669,7 @@ def ins2fasta(vcf):
     fasta = formats.FASTA() 
 
     ## 2. Collect inserted sequences
-    for variant in vcf.variants:
+    for variant in tqdm(vcf.variants):
 
         ## Exclude insertions longer than 20Kb
         if len(variant.alt) > 20000:
@@ -2785,7 +2786,7 @@ def separate_events_length(VCF, maxLen):
     long_VCF.header = VCF.header
 
     ### Separate events by size
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         ## Compute variant len
         length = len(variant.alt)
@@ -2825,7 +2826,7 @@ def annotate_repeats_bkp(VCF, repeatsBinDb):
     '''
     '''
     ## For each variant in the VCF annotate if it overlaps with an annotated repeat
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         ## Check if insertion overlaps with an annotated repeat
         overlaps = repeatsBinDb[variant.chrom].collect_interval(variant.pos, variant.pos, ['REPEAT'])
@@ -2847,7 +2848,7 @@ def filter_VCF_len(VCF, maxLen):
     filtered_VCF.header = VCF.header
  
     ### Apply filtering
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         ## Compute variant len
         length = len(variant.alt)
@@ -2867,7 +2868,7 @@ def annot_retro_lenient(VCF, reference, repeatsDb, tmpDir):
     annot = {}
 
     ## Initialize nested dictionaries for each insertion
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
         annot[insId] = {}
         annot[insId]['INS_TRIMMED'] = variant.alt
@@ -2878,7 +2879,7 @@ def annot_retro_lenient(VCF, reference, repeatsDb, tmpDir):
     annotate_tsd(VCF, reference, annot)
 
     ## Reset trimmed sequence
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
         annot[insId]['INS_TRIMMED'] = variant.alt
 
@@ -2941,7 +2942,7 @@ def annot_retro_lenient(VCF, reference, repeatsDb, tmpDir):
     NO_RETRO_VCF.info_order = VCF.info_order
     NO_RETRO_VCF.format_order = VCF.format_order
 
-    for variant in VCF.variants:
+    for variant in tqdm(VCF.variants):
 
         ## Insertion id
         insId = variant.ID + '_' + variant.chrom + ':' + str(variant.pos) 
@@ -3201,14 +3202,14 @@ print('NB_UNK: ', len(unk_VCF.variants))
 ## 7. Annotate tandem duplication events via realignment into the insertion region
 ###################################################################################
 ## Takes 11'
-print('7. Annotate tandem duplication events via realignment into the insertion region')
-dup_realign_VCF, unk_VCF = annot_tandem_dup_realignment(unk_VCF, reference, tmpDir)
-dupTypes = [variant.info['ITYPE_N'] for variant in dup_realign_VCF.variants]
+#print('7. Annotate tandem duplication events via realignment into the insertion region')
+#dup_realign_VCF, unk_VCF = annot_tandem_dup_realignment(unk_VCF, reference, tmpDir)
+#dupTypes = [variant.info['ITYPE_N'] for variant in dup_realign_VCF.variants]
 
-print('NB_DUP_REALIGN: ', dupTypes.count('DUP'))
-print('NB_INV_DUP_REALIGN: ', dupTypes.count('INV_DUP'))
-print('NB_COMPLEX_DUP_REALIGN: ', dupTypes.count('COMPLEX_DUP'))
-print('NB_UNK: ', len(unk_VCF.variants))
+#print('NB_DUP_REALIGN: ', dupTypes.count('DUP'))
+#print('NB_INV_DUP_REALIGN: ', dupTypes.count('INV_DUP'))
+#print('NB_COMPLEX_DUP_REALIGN: ', dupTypes.count('COMPLEX_DUP'))
+#print('NB_UNK: ', len(unk_VCF.variants))
 
 ## 8. Annotate not mappable tandem duplication events
 ######################################################
@@ -3281,7 +3282,8 @@ out_VCF.header = VCF.header
 
 ## Add annotated variants
 #out_VCF.variants = unk_VCF.variants + retro_VCF.variants
-out_VCF.variants = unk_VCF.variants + retro_VCF.variants + vntr_VCF.variants + dup_VCF.variants + dup_realign_VCF.variants + numt_VCF.variants + retro2_VCF.variants + dup_interspersed_VCF.variants
+#out_VCF.variants = unk_VCF.variants + retro_VCF.variants + vntr_VCF.variants + dup_VCF.variants + dup_realign_VCF.variants + numt_VCF.variants + retro2_VCF.variants + dup_interspersed_VCF.variants
+out_VCF.variants = unk_VCF.variants + retro_VCF.variants + vntr_VCF.variants + dup_VCF.variants + numt_VCF.variants + retro2_VCF.variants + dup_interspersed_VCF.variants
 
 ## Define RETRO annotation info fields
 info2add = {'ITYPE_N': ['.', 'String', 'Type of insertion: solo, partnered, orphan, PSD (Processed pseudogene), VNTR'], \
